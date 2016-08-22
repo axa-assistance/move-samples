@@ -1,0 +1,39 @@
+<script src="/js/jwt-decode.min.js" type="text/javascript"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tokenResponse = {{{tokenResponse}}};
+        var code = '{{{code}}}';
+
+        if (!code || !tokenResponse) {
+            return;
+        }
+
+        var o = window.opener;
+
+        var elCode = o.document.getElementById("code");
+        elCode.innerHTML = code;
+
+        var elAccessToken = o.document.getElementById("access_token");
+        elAccessToken.innerHTML = tokenResponse.access_token.substring(0, 40) + "...";
+        elAccessToken.href = "https://jwt.io/?value=" + encodeURIComponent(tokenResponse.access_token);
+        elAccessToken.token = tokenResponse.access_token;
+
+        var elRefreshToken = o.document.getElementById("refresh_token");
+        elRefreshToken.innerHTML = tokenResponse.refresh_token.substring(0, 40) + "...";
+        elRefreshToken.href = "https://jwt.io/?value=" + encodeURIComponent(tokenResponse.refresh_token);
+
+        var elTitle = o.document.getElementById("title");
+
+        var username = jwt_decode(tokenResponse.access_token).customData.login;
+
+        elTitle.innerHTML = "Welcome " + username + "!";
+
+        window.close();
+    });
+</script>
+
+<ul>
+    <li><strong>Error:</strong><pre>{{error}}</pre></li>
+    <li><strong>Code:</strong><pre id="code">{{code}}</pre></li>
+    <li><strong>TokenResponse:</strong><pre>{{tokenResponse}}</pre></li>
+</ul>
