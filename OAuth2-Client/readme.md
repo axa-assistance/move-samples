@@ -1,44 +1,56 @@
 # oAuth2 Example Application
 
-This example application demonstrates how to use the authorization and resource
-owner credentials grants.
+This example application demonstrates how to use the authorization code
+and resource owner credentials grants.
 
 ## Prerequisites
 
--   Install [nodejs](https://nodejs.org/en/), version 4.*.
--   Download dependencies: open the console. Go to the project folder and run:
+-   Install [nodejs](https://nodejs.org/en/), version 4.*
+-   Clone this repository
 ```bash
+git clone https://github.com/axa-assistance/move-samples.git
+```
+-   Download dependencies
+```bash
+cd move-samples
+cd OAuth2-Client
 npm install
 ```
--   Make sure to have internet access without a proxy.
 
 ## Description of the code
 
 ### routes/index.js:
 
-Is the code that runs server side when an endpoint is hit. You can leave this
-file as is, or change the client_ids and secret for your own ones. You can also
-change the preconfigured callback url.
+This is the code that runs server side when an endpoint is accessed.
+You can leave this file as is, or change the client_id and secret by
+your own ones. You can also change the preconfigured callback url (this
+is the `authorization_code_redirect_url` variable at the top of the file).
 
 ### views/index.hbs:
 
-In this simple page, you can see how an api can be called from javascript once
-the access_token obtained.
+In this simple page, you can see how an api can be called from JavaScript
+once the access token has been obtained.
 
 ## Run the application
 
-Run the application:
+-   Run the application
 ```bash
 npm start
 ```
+-   Browse to [http://localhost:3008/](http://localhost:3008/)
 
 ## Use the application
 
-Open a browser and navigate to: http://localhost:3008. The main page will be
-displayed. If you click on "login with ROC", you will be presented with a
-custom login page. This page is developed in the client app, in the file
-roc_login.hbs.
-Once you enter the credentials, for example: johndoe/myComplexPsw!1, you will
-get an access token (JWT). You can click on it to see its unencoded content.
-With this token, you are now able to make api calls directly from javascript.
+Once the main page is rendered, you can click on "login with ROC".
+You will be presented with a custom login page. This page is developed
+in the client app, in the file roc_login.hbs.
+
+Once you enter the credentials, for example: `johndoe`/`myComplexPsw!1`, you
+will get an access token. This access token is actually a JSON Web Token (JWT).
+You can see it decoded by copy/pasting it at [jwt.io](https://jwt.io/).
+
+For convenience, you can also click on it to see its unencoded content
+directly.
+
+With this token, you will now able to make api calls directly from JavaScript.
 You can try this by clicking on the "GET '/travel/v1/countries'" button.
