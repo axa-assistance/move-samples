@@ -2,16 +2,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var tokenResponse = {{{tokenResponse}}};
-        var code = '{{{code}}}';
 
-        if (!code || !tokenResponse) {
+        if (!tokenResponse) {
             return;
         }
 
         var o = window.opener;
-
-        var elCode = o.document.getElementById("code");
-        elCode.innerHTML = code;
 
         var elAccessToken = o.document.getElementById("access_token");
         elAccessToken.innerHTML = tokenResponse.access_token.substring(0, 40) + "...";

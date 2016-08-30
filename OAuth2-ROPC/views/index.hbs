@@ -2,11 +2,9 @@
 <h1 id="title">{{title}}</h1>
 <h2>Login</h2>
 <ul>
-    <li><a href="{{{gtw_url}}}/auth/v1/authorize?response_type=code&redirect_uri={{{authorization_code_redirect_url}}}&scope=urn%3Aaxa.assistance.travel.countries.read_only%20openid&state=state&client_id={{{client_id}}}" target="_blank">Log in using authorization_code grant</a></li>
     <li><a href="/roc_login" target="_blank">Log in using resource owner credentials grant (ROC)</a></li>
     <br>
     <ul>
-        <li><b>Authorization Code:&nbsp;</b><span id="code"></span></li>
         <li><b>Access Token:&nbsp;</b><a id="access_token" target="_blank"></a></li>
         <li><b>Refresh Token:&nbsp;</b><a id="refresh_token" target="_blank"></a></li>
     </ul>
