@@ -1,7 +1,7 @@
 # oAuth2 Example Application
 
-This example application demonstrates how to use the authorization code
-and resource owner credentials grants.
+This example application demonstrates how to use the Resource Owner Password
+Credentials Grant.
 
 ## Prerequisites
 
@@ -23,8 +23,7 @@ npm install
 
 This is the code that runs server side when an endpoint is accessed.
 You can leave this file as is, or change the client_id and secret by
-your own ones. You can also change the preconfigured callback url (this
-is the `authorization_code_redirect_url` variable at the top of the file).
+your own ones.
 
 ### views/index.hbs:
 
