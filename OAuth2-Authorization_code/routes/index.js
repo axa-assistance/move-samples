@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const wreck = require('wreck');
 
-var gateway_url = 'https://rest.axa-assistance.com';
+var gateway_url = 'https://test-move.aa-aws-relay.com';
 
 var authorization_code_client_id = 'b7f197f5';
 var authorization_code_client_secret = '84649743be62a42e0a72e1afd3a88b83';
