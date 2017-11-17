@@ -1,0 +1,202 @@
+<center>
+    <h1 id="title">Registration Process</h1>
+</center>
+
+<h2 id="welcome"></h2>
+
+<h2>Config</h2>
+<div id="setup">
+    <div>
+        <label>Gateway Url :</label>
+        <select id="gateway_url">
+            <option value="https://test-move.aa-aws-relay.com">#Move Test</option>
+            <option value="https://int-move.aa-aws-relay.com/">#Move Integration</option>
+        </select>
+    </div>
+    <div>
+        <label>Invitation Code :</label>
+        <input id="invitation_code" type="text" placeholder="Invitation Code" size="40" value="" />
+    </div>
+</div>
+
+<h2>Registration</h2>
+<div id="register">
+    <div>
+        <label>Email :</label>
+        <input id="local-part" type="text" placeholder="email" size="20" />@YOPmail.com
+    </div>
+    <div>
+        <label>Password :</label>
+        <input id="password" type="text" placeholder="Password" size="40" value="complexEnough?1" />
+    </div>
+    <div>
+        <label>Firstname
+            <i>(Optional)</i>:</label>
+        <input id="first_name" type="text" placeholder="Firstname" size="40" />
+    </div>
+    <div>
+        <label>Lastname
+            <i>(Optional)</i>:</label>
+        <input id="last_name" type="text" placeholder="Lastname" size="40" />
+    </div>
+    <input id="register_btn" type="button" value="Register" />
+</div>
+
+<div id="register_confirmation" style="display:none;">
+    <h2>Confirmation</h2>
+    <ul id="success">
+        <a id="login" target="_blank">Check your email</a>
+        <br>
+        <ol>
+            <li>
+                <b>Confirmation Id:&nbsp;</b>
+                <span id="confirmation_id"></span>
+            </li>
+
+            <li>
+                <i>(only for 2FA) </i>
+                <b>Set the phone number (2FA) :&nbsp;</b>
+                <input id="phone_number" type="text" placeholder="Phone number" size="20"
+                />
+                <a href="https://smsreceivefree.com" target="_blank">(fake mail tools)</a>
+            </li>
+            <li>
+                <i>(only for 2FA) </i>
+                <input id="sendotp" type="button" value="Send OTP" />
+            </li>
+
+            <li>
+                <b>Set the confirmation code :&nbsp;</b>
+                <input id="confirmation_code" type="text" placeholder="Confirmation code"
+                    size="20" />
+            </li>
+            <li>
+                <i>(only for 2FA) </i>
+                <b>Set the OTP :&nbsp;</b>
+                <input id="otp" type="text" placeholder="OTP" size="20" />
+            </li>
+            <li>
+                <input id="confirm" type="button" value="Confirm" />
+            </li>
+        </ol>
+    </ul>
+    <ul id="error">
+        <br>
+        <ul>
+            <li>
+                <b>Status Code:&nbsp;</b>
+                <span id="status_code" style="color: red;"></span>
+            </li>
+            <li>
+                <b>Error Description:&nbsp;</b>
+                <span id="error_description" style="color: red;"></span>
+            </li>
+        </ul>
+    </ul>
+</div>
+
+<script>
+
+    var config = {};
+
+    $(document).ready(function () {
+
+        $("#register_btn").click(() => {
+
+            $("#welcome").text("");
+            $("#otp").val("")
+            $("#confirmation_code").val("")
+
+            config.gateway_url = $("#gateway_url").val();
+            config.invitation_code = $("#invitation_code").val();
+            config.email = $("#local-part").val() + "@YOPmail.com";
+            config.first_name = $("#first_name").val();
+            config.last_name = $("#last_name").val();
+            config.password = $("#password").val();
+
+            $("#login").attr("href", `http://www.yopmail.com?login=${config.email}`);
+
+            var payload = {
+                invitation_code: config.invitation_code,
+                first_name: config.first_name,
+                last_name: config.last_name,
+                password: config.password,
+                email: config.email
+            }
+
+            $.post(`${config.gateway_url}/user/v1/identities/register`, payload)
+                .fail((jqXHR, textStatus, errorThrown) => {
+
+                    $("#status_code").text(jqXHR.responseJSON.status_code);
+                    $("#error_description").text(jqXHR.responseJSON.error_description);
+
+                    $("#error").show();
+                    $("#success").hide();
+                })
+                .done((data) => {
+
+                    $("#confirmation_id").text(data.confirmation_id);
+
+                    $("#success").show();
+                    $("#error").hide();
+                })
+                .always((data) => {
+
+                    $("#register_confirmation").show();
+                });
+        });
+
+        $("#sendotp").click(() => {
+            var payload = {
+                confirmation_id: $("#confirmation_id").text(),
+                phone_number: $("#phone_number").val()
+            }
+
+            $.post(`${config.gateway_url}/user/v1/identities/register/sendOTP`, payload)
+                .fail((jqXHR, textStatus, errorThrown) => {
+
+                    $("#status_code").text(jqXHR.responseJSON.status_code);
+                    $("#error_description").text(jqXHR.responseJSON.error_description);
+
+                    $("#error").show();
+                    $("#success").hide();
+                })
+                .done((data) => {
+
+                    $("#success").show();
+                    $("#error").hide();
+                })
+                .always((data) => {
+
+                });
+        });
+
+        $("#confirm").click(() => {
+            var payload = {
+                confirmation_id: $("#confirmation_id").text(),
+                confirmation_token: $("#confirmation_code").val(),
+                otp: $("#otp").val()
+            }
+
+            $.post(`${config.gateway_url}/user/v1/identities/register/confirm`, payload)
+                .fail((jqXHR, textStatus, errorThrown) => {
+
+                    $("#status_code").text(jqXHR.responseJSON.status_code);
+                    $("#error_description").text(jqXHR.responseJSON.error_description);
+
+                    $("#error").show();
+                    $("#success").hide();
+                })
+                .done((data) => {
+
+                    $("#welcome").text("Success account creation !!!");
+
+                    $("#success").show();
+                    $("#error").hide();
+                })
+                .always((data) => {
+
+                });
+        });
+    });
+</script>
