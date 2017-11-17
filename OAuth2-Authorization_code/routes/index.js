@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Authorization_code example', gtw_url: gateway_url, client_id: authorization_code_client_id, authorization_code_redirect_url: authorization_code_redirect_url });
 });
 
-router.get('/oauthCallback', function(req, res) {
+router.get(/.*callback$/, function(req, res) {
 
     const basic_auth = new Buffer(authorization_code_client_id + ':' + authorization_code_client_secret).toString('base64');
     if (req.query.error) {
