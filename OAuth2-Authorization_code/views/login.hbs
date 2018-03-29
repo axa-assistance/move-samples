@@ -1,0 +1,184 @@
+<center>
+    <h1 id="title">Login Process</h1>
+</center>
+
+<h2 id="welcome"></h2>
+
+<h2>Config</h2>
+<div id="setup">
+    <div>
+        <label>Gateway Url :</label>
+        <select id="gateway_url">
+            <option value="https://test-move.aa-aws-relay.com/auth/v1">#Move Test</option>
+            <option value="https://int-move.aa-aws-relay.com/auth/v1">#Move Integration</option>
+            <option value="https://maam-dev.axa.com/dev">DEV - MAAM V0</option>
+            <option value="https://maam-dev.axa.com/maam/v1">DEV - MAAM V1</option>
+        </select>
+    </div>
+    <div>
+        <label>Client id :</label>
+        <input id="authorization_code_client_id" type="text" placeholder="Client Id" size="40" />
+    </div>
+    <div>
+        <label>Client Secret :</label>
+        <input id="authorization_code_client_secret" type="password" placeholder="Client Secret" size="40" />
+    </div>
+    <div>
+        <label>Url redirect :</label>
+        <input id="authorization_code_redirect_url" type="text" placeholder="Url redirect" value="http://localhost:8080/callback"
+            size="40" />
+    </div>
+    <label>Scope</label>
+    <div>
+        <ul id="scopes-list">
+            <li>
+                <input type="checkbox" value="openid" /> openid</li>
+            <li>
+                <input type="checkbox" value="urn:axa.assistance.travel.countries.read_only" /> urn:axa.assistance.travel.countries.read_only</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.ondemand.service.medical_consultations.write" /> urn:axa.partners.ondemand.service.medical_consultations.write</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.ondemand.service.medical_consultations.prescriptions.write" /> urn:axa.partners.ondemand.service.medical_consultations.prescriptions.write</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.ondemand.service.medicalconsultations.prescriptions.read_only"
+                /> urn:axa.partners.ondemand.service.medicalconsultations.prescriptions.read_only</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.ondemand.service.medicalconsultations.read_only" /> urn:axa.partners.ondemand.service.medicalconsultations.read_only</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.specific.tcm.customers.read_only" /> urn:axa.partners.specific.tcm.customers.read_only</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.specific.tcm.customers.write" /> urn:axa.partners.specific.tcm.customers.write</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.specific.tcm.customers.consents.write" /> urn:axa.partners.specific.tcm.customers.consents.write</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.specific.tcm.medicalcustomers.consultations.read_only" /> urn:axa.partners.specific.tcm.medicalcustomers.consultations.read_only</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.specific.tcm.medicalcustomers.read_only" /> urn:axa.partners.specific.tcm.medicalcustomers.read_only</li>
+            <li>
+                <input type="checkbox" value="urn:axa.partners.specific.tcm.medicalcustomers.write" /> urn:axa.partners.specific.tcm.medicalcustomers.write</li>
+        </ul>
+    </div>
+    <div id="message"></div>
+    <input id="build" type="button" value="Configure server" />
+</div>
+
+<div id="login_div" style="display:none;">
+    <h2>Login</h2>
+    <ul>
+        <li>
+            <a id="login" target="_blank">Log in using authorization_code grant</a>
+        </li>
+        <br>
+        <ul>
+            <li>
+                <b>Authorization Code:&nbsp;</b>
+                <span id="code"></span>
+            </li>
+            <li>
+                <b>Access Token:&nbsp;</b>
+                <a id="access_token" target="_blank"></a>
+            </li>
+            <li>
+                <b>Refresh Token:&nbsp;</b>
+                <span id="refresh_token"></span>
+            </li>
+        </ul>
+    </ul>
+</div>
+
+<div id="api_div" style="display:none;">
+    <h2>Api invocations</h2>
+    <ul>
+        <li>
+            <a href="javascript:countries();">GET '/travel/v1/countries'</a>
+        </li>
+    </ul>
+
+    <h2>Result</h2>
+    <ul>
+        <li>
+            <b>Url:&nbsp;</b>
+            <span id="response_url" />
+        </li>
+        <li>
+            <b>Status code:&nbsp;</b>
+            <span id="status_code" />
+        </li>
+        <li>
+            <b>Output:&nbsp;</b>
+            <pre id="api_result" />
+        </li>
+    </ul>
+</div>
+
+<script>
+
+    var config = {};
+
+    $(document).ready(function () {
+
+        $("#setup > div input").add("#setup > div select").bind('input', () => {
+            $("#message").html("Deprecated value. You need to re-build the configuration.");
+        });
+
+        $("#scopes-list input").change(() => {
+            $("#message").html("Deprecated value. You need to re-build the configuration.");
+        });
+
+        $("#build").click(() => {
+            config.gateway_url = $("#gateway_url").val();
+            config.client_id = encodeURIComponent($("#authorization_code_client_id").val());
+            config.client_secret = encodeURIComponent($("#authorization_code_client_secret").val());
+            config.redirect_url = encodeURIComponent($("#authorization_code_redirect_url").val());
+
+            var scope = "";
+            $("#scopes-list input:checked").each((i, e) => {
+                scope = `${scope} ${e.value}`;
+            });
+            config.scope = encodeURIComponent(scope.trim());
+            console.log(config);
+            $("#message").html("");
+            var url = `${config.gateway_url}/authorize?response_type=code&redirect_uri=${config.redirect_url}&scope=${config.scope}&state=state&client_id=${config.client_id}`
+            $("#login").attr("href", url);
+
+            $.post("/build", config)
+                .done((data) => {
+                    $("#login_div").show();
+                });
+        });
+
+    });
+
+
+
+
+
+    xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", display_result);
+    xhr.addEventListener("error", display_result);
+
+    function display_result() {
+        var elCode = document.getElementById("status_code");
+        elCode.innerHTML = this.status;
+
+        var elOut = document.getElementById("api_result");
+        elOut.innerHTML = this.responseText;
+
+        var elUrl = document.getElementById("response_url");
+        elUrl.innerHTML = this.responseURL;
+    }
+
+    function countries() {
+        var token = document.getElementById("access_token").token;
+
+        xhr.open("GET", `${config.gateway_url}/travel/v1/countries`);
+
+        if (token) {
+            xhr.setRequestHeader("Authorization", "Bearer " + token);
+        }
+
+        xhr.send();
+    }
+
+
+</script>
